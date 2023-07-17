@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          name: HaHeisenberg/BankProject.Shared
+          repository: HaHeisenberg/BankProject.Shared
           
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v1
