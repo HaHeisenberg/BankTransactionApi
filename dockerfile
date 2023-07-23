@@ -1,14 +1,23 @@
-﻿FROM mcr.microsoft.com/dotnet/nightly/sdk:7.0 AS build
-WORKDIR /source
-COPY ./BankTransactionApi .
-RUN dotnet restore "./BankTransactionApi.csproj" --disable-parallel
-RUN dotnet publish "./BankTransactionApi.csproj" -c release -o /app --no-restore
+#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
-FROM mcr.microsoft.com/dotnet/nightly/sdk:7.0
+FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
 WORKDIR /app
-COPY --from=build /app ./
+EXPOSE 80
+EXPOSE 443
 
-EXPOSE 4000
-#EXPOSE 4001
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+WORKDIR /src
+COPY ["BankTransactionApi/BankTransactionApi.csproj", "BankTransactionApi/"]
+COPY ["BankProject.Shared/BankProject.Shared.csproj", "BankProject.Shared/"]
+RUN dotnet restore "BankTransactionApi/BankTransactionApi.csproj"
+COPY . .
+WORKDIR "/src/BankTransactionApi"
+RUN dotnet build "BankTransactionApi.csproj" -c Release -o /app/build
 
+FROM build AS publish
+RUN dotnet publish "BankTransactionApi.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "BankTransactionApi.dll"]
