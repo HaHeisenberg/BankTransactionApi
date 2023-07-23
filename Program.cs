@@ -3,6 +3,10 @@ using BankTransactionApi.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
+using Azure.Core;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -35,9 +39,25 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         }
     );
 
-var dbConnectionString = builder.Environment.IsDevelopment()
-    ? builder.Configuration.GetConnectionString("AppDb")
-    : Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
+SecretClientOptions options = new SecretClientOptions()
+{
+    Retry =
+        {
+            Delay= TimeSpan.FromSeconds(2),
+            MaxDelay = TimeSpan.FromSeconds(16),
+            MaxRetries = 5,
+            Mode = RetryMode.Exponential
+         }
+};
+var client = new SecretClient(new Uri("https://bankprojectkeyvault.vault.azure.net/"), new DefaultAzureCredential(), options);
+
+KeyVaultSecret secret = client.GetSecret("BankProjectSQLConnectionString");
+
+string dbConnectionString = secret.Value;
+
+//var dbConnectionString = builder.Environment.IsDevelopment()
+//    ? builder.Configuration.GetConnectionString("AppDb")
+//    : Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
 
 builder.Services.AddDbContext<TransactionDbContext>(
     o =>
