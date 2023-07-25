@@ -27,7 +27,7 @@ jobs:
               cd ..
               git clone https://github.com/HaHeisenberg/BankProject.Shared
               ls
-              cd Bank.Client.UI
+              cd BankTransactionApi
 
       - name: Build with dotnet
         run: dotnet build --configuration Release
