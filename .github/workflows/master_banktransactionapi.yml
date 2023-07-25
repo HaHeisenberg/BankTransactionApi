@@ -11,16 +11,23 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v2
-
+      - uses: actions/checkout@v3
+          
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '7.x'
           include-prerelease: true
+        
+      - name: Clone Shared
+        run: |
+              cd ..
+              git clone https://github.com/HaHeisenberg/BankProject.Shared
+              ls
+              cd BankTransactionApi
 
       - name: Build with dotnet
         run: dotnet build --configuration Release
@@ -35,7 +42,7 @@ jobs:
           path: ${{env.DOTNET_ROOT}}/myapp
 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     needs: build
     environment:
       name: 'Production'
@@ -53,5 +60,5 @@ jobs:
         with:
           app-name: 'BankTransactionApi'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_972A3C779D514269B03362E9F7F40345 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_F9021C3584324F819CA40A79A21B6514 }}
           package: .
