@@ -55,18 +55,16 @@ KeyVaultSecret secret = client.GetSecret("BankProjectSQLConnectionString");
 
 string dbConnectionString = secret.Value;
 
-//var dbConnectionString = builder.Environment.IsDevelopment()
-//    ? builder.Configuration.GetConnectionString("AppDb")
-//    : Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
+builder.Services.AddSqlServer<TransactionDbContext>(dbConnectionString, options => options.EnableRetryOnFailure());
 
-builder.Services.AddDbContext<TransactionDbContext>(
-    o =>
-    {
-        o.EnableSensitiveDataLogging();
-        o.EnableDetailedErrors();
-        o.UseNpgsql(dbConnectionString);
-    },
-    ServiceLifetime.Transient);
+//builder.Services.AddDbContext<TransactionDbContext>(
+//    o =>
+//    {
+//        o.EnableSensitiveDataLogging();
+//        o.EnableDetailedErrors();
+//        o.UseNpgsql(dbConnectionString);
+//    },
+//    ServiceLifetime.Transient);
 
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 
@@ -78,7 +76,7 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 
-//app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
 app.UseAuthorization();
 

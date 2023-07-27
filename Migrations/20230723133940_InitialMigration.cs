@@ -15,12 +15,12 @@ namespace BankTransactionApi.Migrations
                 name: "Transactions",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    SenderAccountId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ReceiverAccountId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Amount = table.Column<double>(type: "double precision", nullable: false),
-                    SendingTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Completed = table.Column<bool>(type: "boolean", nullable: false)
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SenderAccountId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ReceiverAccountId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Amount = table.Column<double>(type: "float", nullable: false),
+                    SendingTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Completed = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
